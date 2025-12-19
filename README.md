@@ -1,8 +1,8 @@
 # Disgaea DS Manager
 
-An editor for **DSARC** and **MSND** archives by *Nippon Ichi Software*, built with **C# (.NET 9.0)**.
+An editor for **DSARC** and **MSND** archives by *Nippon Ichi Software*, built with **C# (.NET 10.0)**.
 
-**Requirement:** You need to install the [.NET Desktop Runtime 9.0](https://dotnet.microsoft.com/en-us/download/dotnet/9.0) for this program to run.
+**Requirement:** You need to install the [.NET Desktop Runtime 10.0](https://dotnet.microsoft.com/en-us/download/dotnet/10.0) if running on Windows for this program to run. (It is included in the Linux binary)
 
 ---
 

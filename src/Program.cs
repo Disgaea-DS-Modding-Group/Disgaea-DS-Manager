@@ -1,6 +1,7 @@
 ﻿using Avalonia;
 using System;
 namespace Disgaea_DS_Manager;
+
 public static class Program
 {
     [STAThread]

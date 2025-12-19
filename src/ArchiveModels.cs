@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 namespace Disgaea_DS_Manager;
+
 public enum ArchiveType { DSARC, MSND }
 public class ImportResult
 {

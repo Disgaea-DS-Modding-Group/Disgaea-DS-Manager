@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 namespace Disgaea_DS_Manager;
+
 public interface IArchiveService
 {
     Task<Collection<Entry>> LoadArchiveAsync(string archivePath, CancellationToken ct = default);

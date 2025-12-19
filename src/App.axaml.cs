@@ -2,6 +2,7 @@ using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 namespace Disgaea_DS_Manager;
+
 public partial class App : Application
 {
     public override void Initialize()

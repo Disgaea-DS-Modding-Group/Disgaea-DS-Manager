@@ -13,6 +13,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 namespace Disgaea_DS_Manager;
+
 public partial class MainWindow : Window
 {
     private string? _archivePath;
