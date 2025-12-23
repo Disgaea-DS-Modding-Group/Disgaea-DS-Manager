@@ -1,31 +1,59 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-	<PropertyGroup>
-		<OutputType>WinExe</OutputType>
-		<TargetFramework>net10.0</TargetFramework>
-		<Nullable>enable</Nullable>
-		<BuiltInComInteropSupport>true</BuiltInComInteropSupport>
-		<ApplicationManifest>app.manifest</ApplicationManifest>
-		<AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(OS)' == 'Windows_NT'">
-		<ApplicationIcon>Assets\icon.ico</ApplicationIcon>
-	</PropertyGroup>
-	<ItemGroup>
-		<AvaloniaResource Include="Assets\**" />
-	</ItemGroup>
-	<ItemGroup>
-		<PackageReference Include="Avalonia" Version="11.3.10" />
-		<PackageReference Include="Avalonia.Desktop" Version="11.3.10" />
-		<PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.10" />
-		<PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.10" />
-		<PackageReference Include="Semi.Avalonia" Version="11.3.7.1" />
-		<PackageReference Include="System.Resources.Extensions" Version="10.0.1" />
-		<PackageReference Include="System.Configuration.ConfigurationManager" Version="10.0.1" />
-		<PackageReference Include="Avalonia.Diagnostics" Version="11.3.10">
-			<IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
-			<PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
-			<PrivateAssets>all</PrivateAssets>
-			<IncludeAssets>none</IncludeAssets>
-		</PackageReference>
-	</ItemGroup>
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+    <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    <AssemblyVersion>1.1.0</AssemblyVersion>
+    <FileVersion>1.1.0.0</FileVersion>
+    <Version>1.1.0</Version>
+    <Company>LandonAndEmma</Company>
+    <Product>Disgaea DS Manager</Product>
+    <Description>Edit DSARC and MSND archives by Nippon Ichi Software</Description>
+    <AssemblyTitle>Disgaea DS Manager</AssemblyTitle>
+    <Copyright>2025</Copyright>
+    <NeutralLanguage>en-US</NeutralLanguage>
+    <PublishTrimmed>true</PublishTrimmed>
+    <TrimMode>link</TrimMode>
+    <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
+    <SuppressTrimAnalysisWarnings>false</SuppressTrimAnalysisWarnings>
+    <DebugType>none</DebugType>
+    <DebugSymbols>false</DebugSymbols>
+    <Optimize>true</Optimize>
+    <PublishSingleFile>true</PublishSingleFile>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+    <InvariantGlobalization>false</InvariantGlobalization>
+    <EventSourceSupport>false</EventSourceSupport>
+    <UseSystemResourceKeys>true</UseSystemResourceKeys>
+    <IlcOptimizationPreference>Size</IlcOptimizationPreference>
+    <IlcGenerateDgmlFile>false</IlcGenerateDgmlFile>
+    <IlcGenerateMapFile>false</IlcGenerateMapFile>
+    <StripSymbols>true</StripSymbols>
+    <StartupObject>Disgaea_DS_Manager.Program</StartupObject>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(OS)' == 'Windows_NT'">
+    <ApplicationIcon>Assets\icon.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <AvaloniaResource Include="Assets\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="11.3.10">
+      <TreatAsUsed>true</TreatAsUsed>
+    </PackageReference>
+    <PackageReference Include="Avalonia.Desktop" Version="11.3.10" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.10" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.10" />
+    <PackageReference Include="Semi.Avalonia" Version="11.3.7.1" />
+    <PackageReference Include="System.Resources.Extensions" Version="10.0.1" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="10.0.1" />
+    <PackageReference Include="Avalonia.Diagnostics" Version="11.3.10" />
+  </ItemGroup>
+  <ItemGroup>
+    <TrimmerRootAssembly Include="Avalonia.Themes.Fluent" />
+    <TrimmerRootAssembly Include="Disgaea_DS_Manager" />
+  </ItemGroup>
 </Project>
