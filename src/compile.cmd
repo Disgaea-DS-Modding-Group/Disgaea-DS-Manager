@@ -15,7 +15,7 @@ echo.
 
 :: Configuration
 set "PUBLISH_DIR=publish"
-set "PROJECT_NAME=ARM9Editor"
+set "PROJECT_NAME=Disgaea-DS-Manager"
 set "ERROR_COUNT=0"
 set "START_TIME=%TIME%"
 
