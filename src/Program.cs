@@ -1,4 +1,4 @@
-﻿using Avalonia;
+using Avalonia;
 namespace Disgaea_DS_Manager;
 
 public static class Program
@@ -10,6 +10,10 @@ public static class Program
     }
     public static AppBuilder BuildAvaloniaApp()
     {
-        return AppBuilder.Configure<App>().UsePlatformDetect().WithInterFont().LogToTrace();
+        return AppBuilder
+            .Configure<App>()
+            .UsePlatformDetect()
+            .WithInterFont()
+            .LogToTrace();
     }
 }
