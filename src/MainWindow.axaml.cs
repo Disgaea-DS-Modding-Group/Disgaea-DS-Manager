@@ -513,11 +513,15 @@ public partial class MainWindow : Window
     }
     private async Task SaveAsync()
     {
+        if (_manager.Current.FilePath is null)
+        {
+            await SaveAsAsync();
+            return;
+        }
         if (!await ValidateBeforeSaveAsync())
         {
             return;
         }
-        if (_manager.Current.FilePath is null) { await SaveAsAsync(); return; }
         await DoSaveAsync(_manager.Current.FilePath);
     }
     private async Task SaveAsAsync()
@@ -545,16 +549,14 @@ public partial class MainWindow : Window
         }
         if (_manager.HasBlankFiles())
         {
-            _ = _manager.GetEmptyDsarcEntries();
-            string message = "The archive contains blank files or empty containers.\n\n";
-            message += "Yes: Remove all blank files/empty folders and save\n" +
-                       "No: Save without removing blank files\n" +
-                       "Cancel: Do not save";
+            string message = "The archive contains blank files or empty containers.\n\n" +
+                             "Yes: Remove all blank files/empty folders and save\n" +
+                             "No: Save without removing blank files\n" +
+                             "Cancel: Do not save";
             ConfirmResult result = await DialogService.ShowConfirmWithCancelAsync(this, "Blank Files Detected", message);
             if (result == ConfirmResult.Yes)
             {
-                await _manager.RemoveBlankEntriesRecursiveAsync();
-                await _manager.RemoveEmptyDsarcEntriesAsync();
+                await _manager.RemoveAllEmptyEntriesAsync();
                 Log("Removed blank files and empty archives.");
             }
             else if (result == ConfirmResult.Cancel)

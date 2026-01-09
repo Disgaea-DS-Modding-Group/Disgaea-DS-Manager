@@ -172,76 +172,88 @@ public sealed class DocumentManager
     }
     public bool HasBlankFiles()
     {
-        return CheckForBlanks(Current.RootEntry);
+        return HasBlankEntries(Current.RootEntry);
     }
-    private static bool CheckForBlanks(ArchiveEntry entry)
+    // <summary>
+    // Checks if an entry or any of its descendants contain blank/empty content.
+    // </summary>
+    private static bool HasBlankEntries(ArchiveEntry entry)
     {
         foreach (ArchiveEntry child in entry.Children)
         {
-            if (child.NestedType == ArchiveType.MSND)
+            if (IsFullyEmpty(child))
             {
-                if (child.Children.All(c => c.Size == 0))
-                {
-                    return true;
-                }
-                continue;
+                return true;
             }
-            if (child.NestedType == ArchiveType.DSARC)
-            {
-                if (CheckForBlanks(child) || child.Children.Count == 0)
-                {
-                    return true;
-                }
-            }
-            else if (child.Size == 0)
+            if (child.NestedType == ArchiveType.DSARC && HasBlankEntries(child))
             {
                 return true;
             }
         }
         return false;
     }
-    public async Task RemoveBlankEntriesRecursiveAsync(CancellationToken ct = default)
+    // <summary>
+    // Determines if an entry is "fully empty" - meaning it has no meaningful content.
+    // For containers, this means all descendants are also fully empty.
+    // </summary>
+    private static bool IsFullyEmpty(ArchiveEntry entry)
+    {
+        return entry.NestedType == ArchiveType.MSND
+            ? entry.Children.Count == 0 || entry.Children.All(c => c.Size == 0)
+            : entry.NestedType == ArchiveType.DSARC ? entry.Children.Count == 0 || entry.Children.All(IsFullyEmpty) : entry.Size == 0;
+    }
+    // <summary>
+    // Removes all empty entries from the archive.
+    // Prioritizes deleting containers that are fully empty (all descendants empty)
+    // before deleting individual empty files. This is more efficient and matches
+    // user expectations - if a whole folder is empty, delete the folder.
+    // </summary>
+    public async Task RemoveAllEmptyEntriesAsync(CancellationToken ct = default)
     {
         bool changed = true;
         while (changed)
         {
+            ct.ThrowIfCancellationRequested();
             changed = false;
-            List<ArchiveEntry> targets = [];
-            CollectBlankTargets(Current.RootEntry, targets);
-            if (targets.Count > 0)
+            ArchiveEntry? toDelete = FindBestDeletionTarget(Current.RootEntry);
+            if (toDelete is not null)
             {
+                await DeleteEntryAsync(toDelete, ct).ConfigureAwait(false);
                 changed = true;
-                await DeleteEntryAsync(targets[0], ct).ConfigureAwait(false);
             }
         }
     }
-    private static void CollectBlankTargets(ArchiveEntry entry, List<ArchiveEntry> targets)
+    // <summary>
+    // Finds the best entry to delete next. Prioritizes:
+    // 1. Fully empty containers (delete whole container instead of individual children)
+    // 2. Individual empty files in containers that have mixed content
+    // </summary>
+    private static ArchiveEntry? FindBestDeletionTarget(ArchiveEntry root)
     {
-        foreach (ArchiveEntry child in entry.Children)
+        foreach (ArchiveEntry child in root.Children)
         {
-            if (child.NestedType == ArchiveType.DSARC)
+            if (IsFullyEmpty(child))
             {
-                CollectBlankTargets(child, targets);
-            }
-        }
-        foreach (ArchiveEntry child in entry.Children)
-        {
-            if (child.NestedType == ArchiveType.MSND)
-            {
-                continue;
+                return child;
             }
             if (child.NestedType == ArchiveType.DSARC)
             {
-                if (child.Children.Count == 0)
+                ArchiveEntry? nested = FindBestDeletionTarget(child);
+                if (nested is not null)
                 {
-                    targets.Add(child);
+                    return nested;
                 }
             }
-            else if (child.Size == 0)
-            {
-                targets.Add(child);
-            }
         }
+        return null;
+    }
+    public async Task RemoveBlankEntriesRecursiveAsync(CancellationToken ct = default)
+    {
+        await RemoveAllEmptyEntriesAsync(ct).ConfigureAwait(false);
+    }
+    public async Task RemoveEmptyDsarcEntriesAsync(CancellationToken ct = default)
+    {
+        await Task.CompletedTask;
     }
     public async Task RenameEntryAsync(ArchiveEntry target, string newName, CancellationToken ct = default)
     {
@@ -287,33 +299,20 @@ public sealed class DocumentManager
     public List<ArchiveEntry> GetEmptyDsarcEntries()
     {
         List<ArchiveEntry> emptyEntries = [];
-        FindEmptyEntries(Current.RootEntry, emptyEntries);
+        FindEmptyContainers(Current.RootEntry, emptyEntries);
         return emptyEntries;
     }
-    private static void FindEmptyEntries(ArchiveEntry entry, List<ArchiveEntry> results)
+    private static void FindEmptyContainers(ArchiveEntry entry, List<ArchiveEntry> results)
     {
         foreach (ArchiveEntry child in entry.Children)
         {
-            if (child.NestedType == ArchiveType.DSARC && child.Children.Count == 0)
+            if (IsFullyEmpty(child))
             {
                 results.Add(child);
             }
-            else if (child.NestedType == ArchiveType.MSND && child.Children.All(c => c.Size == 0))
+            else if (child.NestedType == ArchiveType.DSARC)
             {
-                results.Add(child);
-            }
-            FindEmptyEntries(child, results);
-        }
-    }
-    public async Task RemoveEmptyDsarcEntriesAsync(CancellationToken ct = default)
-    {
-        List<long> emptyIds = GetEmptyDsarcEntries().Select(e => e.Id).ToList();
-        foreach (long id in emptyIds)
-        {
-            ArchiveEntry? entry = EntryFinder.FindById(Current.RootEntry, id);
-            if (entry is not null)
-            {
-                await DeleteEntryAsync(entry, ct).ConfigureAwait(false);
+                FindEmptyContainers(child, results);
             }
         }
     }
