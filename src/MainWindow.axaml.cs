@@ -545,34 +545,17 @@ public partial class MainWindow : Window
         }
         if (_manager.HasBlankFiles())
         {
-            ConfirmResult result = await DialogService.ShowConfirmWithCancelAsync(this, "Blank Files Detected",
-               "The archive contains blank files or empty containers.\n\n" +
-               "Yes: Remove all blank files/empty folders and save\n" +
-               "No: Save without removing blank files\n" +
-               "Cancel: Do not save");
+            _ = _manager.GetEmptyDsarcEntries();
+            string message = "The archive contains blank files or empty containers.\n\n";
+            message += "Yes: Remove all blank files/empty folders and save\n" +
+                       "No: Save without removing blank files\n" +
+                       "Cancel: Do not save";
+            ConfirmResult result = await DialogService.ShowConfirmWithCancelAsync(this, "Blank Files Detected", message);
             if (result == ConfirmResult.Yes)
             {
                 await _manager.RemoveBlankEntriesRecursiveAsync();
-                Log("Removed blank files and empty archives.");
-            }
-            else if (result == ConfirmResult.Cancel)
-            {
-                return false;
-            }
-        }
-        List<ArchiveEntry> emptyEntries = _manager.GetEmptyDsarcEntries();
-        if (emptyEntries.Count > 0)
-        {
-            string names = string.Join("\n• ", emptyEntries.Select(e => e.Name));
-            ConfirmResult result = await DialogService.ShowConfirmWithCancelAsync(this, "Empty Archives Found",
-                $"The following empty archives were found:\n\n• {names}\n\n" +
-                "Yes: Remove empty archives and save\n" +
-                "No: Save without removing empty archives\n" +
-                "Cancel: Do not save");
-            if (result == ConfirmResult.Yes)
-            {
                 await _manager.RemoveEmptyDsarcEntriesAsync();
-                Log("Removed empty archives");
+                Log("Removed blank files and empty archives.");
             }
             else if (result == ConfirmResult.Cancel)
             {

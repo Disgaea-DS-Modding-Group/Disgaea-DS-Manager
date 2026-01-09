@@ -180,6 +180,10 @@ public sealed class DocumentManager
         {
             if (child.NestedType == ArchiveType.MSND)
             {
+                if (child.Children.All(c => c.Size == 0))
+                {
+                    return true;
+                }
                 continue;
             }
             if (child.NestedType == ArchiveType.DSARC)

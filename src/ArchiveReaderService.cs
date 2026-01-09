@@ -65,12 +65,12 @@ public sealed class ArchiveReaderService
                 DataSource = new BufferSource(buf[offset..(offset + size)])
             };
             ReadOnlySpan<byte> entryData = buf.AsSpan(offset, Math.Min(size, 8));
-            if (size >= 4 && entryData.SequenceEqual(Formats.MagicMsnd))
+            if (size >= 4 && entryData[..4].SequenceEqual(Formats.MagicMsnd))
             {
                 entry.NestedType = ArchiveType.MSND;
                 ParseMsndChildren(buf.AsSpan(offset, size), entry, name);
             }
-            else if (size >= 8 && entryData.SequenceEqual(Formats.MagicDsarc))
+            else if (size >= 8 && entryData[..8].SequenceEqual(Formats.MagicDsarc))
             {
                 entry.NestedType = ArchiveType.DSARC;
                 ParseDsarcChildren(buf.AsSpan(offset, size), entry, name);

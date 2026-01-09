@@ -161,13 +161,14 @@ public sealed class FolderImportService
                     ImportOrder = i,
                     DataSource = new BufferSource(dsarcData[offset..(offset + size)])
                 };
-                ReadOnlySpan<byte> entryData = dsarcData.AsSpan(offset, Math.Min(size, 4));
-                if (size >= 4 && entryData.SequenceEqual(Formats.MagicMsnd))
+                ReadOnlySpan<byte> entryData = dsarcData.AsSpan(offset, Math.Min(size, 8));
+                if (size >= 4 && entryData[..Math.Min(4, entryData.Length)].SequenceEqual(Formats.MagicMsnd))
                 {
                     child.NestedType = ArchiveType.MSND;
-                    Formats.PopulateMsndChildren(dsarcData[offset..(offset + size)], child, name);
+                    string baseName = Path.GetFileNameWithoutExtension(name);
+                    Formats.PopulateMsndChildren(dsarcData[offset..(offset + size)], child, baseName);
                 }
-                else if (size >= 8 && entryData.SequenceEqual(Formats.MagicDsarc))
+                else if (size >= 8 && entryData[..Math.Min(8, entryData.Length)].SequenceEqual(Formats.MagicDsarc))
                 {
                     child.NestedType = ArchiveType.DSARC;
                 }

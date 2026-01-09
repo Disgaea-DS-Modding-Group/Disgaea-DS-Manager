@@ -111,9 +111,11 @@ public static class DialogService
             return ConfirmResult.Cancel;
         }
         TaskCompletionSource<ConfirmResult> result = new();
-        Window dialog = CreateBaseDialog(title, DefaultDialogWidth, 220);
+        int initialHeight = 180;
+        Window dialog = CreateBaseDialog(title, DefaultDialogWidth, initialHeight);
         StackPanel stack = new() { Margin = new Thickness(DefaultMargin) };
-        stack.Children.Add(new TextBlock { Text = message, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 0, 0, DefaultMargin) });
+        TextBlock messageBlock = new() { Text = message, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 0, 0, DefaultMargin) };
+        stack.Children.Add(messageBlock);
         StackPanel buttonPanel = CreateButtonPanel();
         Button yesButton = new() { Content = "Yes", Width = 80, Margin = new Thickness(0, 0, 10, 0) };
         Button noButton = new() { Content = "No", Width = 80, Margin = new Thickness(0, 0, 10, 0) };
@@ -155,9 +157,9 @@ public static class DialogService
         await dialog.ShowDialog(owner).ConfigureAwait(true);
         return await result.Task.ConfigureAwait(false);
     }
-    private static Window CreateBaseDialog(string title, int width, int height)
+    private static Window CreateBaseDialog(string title, int width, int height, int? maxHeight = null)
     {
-        return new()
+        Window window = new()
         {
             Title = title,
             Width = width,
@@ -166,6 +168,7 @@ public static class DialogService
             WindowStartupLocation = WindowStartupLocation.CenterOwner,
             SizeToContent = SizeToContent.Height
         };
+        return window;
     }
     private static StackPanel CreateButtonPanel()
     {
